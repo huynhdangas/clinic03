@@ -5,8 +5,7 @@ Time & Date: {{$mailData['time']}}, {{$mailData['date']}}
 <br>
 With: Dr. {{$mailData['doctorName']}}
 <br>
+
 Where: IUH
 <br>
 Contact: 03131131232112
-
-{!! QrCode::size(250)->generate('webnersolutions.com'); !!}

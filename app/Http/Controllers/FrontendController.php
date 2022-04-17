@@ -9,6 +9,10 @@ use App\Models\User;
 use App\Models\Booking;
 use App\Models\Prescription;
 use App\Mail\AppointmentMail;
+use App\Mail\AttachmentMail;
+use Illuminate\Support\Facades\Mail;
+
+use QrCode;
 
 class FrontendController extends Controller
 {
@@ -47,12 +51,15 @@ class FrontendController extends Controller
             return redirect()->back()->with('errmessage', 'You already made an appointment. Please wait 1 day to make next appointment.');
         }
 
+        $qrcodeName = 'code_'.time().'.png';
+
         Booking::create([
             'user_id' =>auth()->user()->id,
             'doctor_id' => $request->doctorId,
             'time' => $request->time,
             'date' =>$request->date,
-            'status' => 0
+            'status' => 0,
+            'qrcode' => $qrcodeName,
         ]);
         Time::where('appointment_id', $request->appointmentId)
             ->where('time', $request->time)->update(['status' => 1]);
@@ -60,15 +67,25 @@ class FrontendController extends Controller
         // send email notification
 
         $doctorName = User::where('id',$request->doctorId)->first();
+
+        $name = auth()->user()->name;
+        $time = $request->time;
+        $date = $request->date;
+        $doctorName =  $doctorName->name;
+        $qrcontent = 'Ten benh nhan: '.$name.' Thoi gian: '.$time.' Ngay kham: '.$date.' Bac si kham: '.$doctorName;
+        QrCode::format('png')->size(500)->generate($qrcontent, public_path('qrcode/'.$qrcodeName));
+
         $mailData = [
             'name'=>auth()->user()->name,
             'time'=>$request->time,
             'date'=>$request->date,
-            'doctorName' => $doctorName->name
+            'doctorName' => $doctorName,
+            'qrcode' => $qrcodeName
+            
 
         ];
         try{
-            \Mail::to(auth()->user()->email)->send(new AppointmentMail($mailData));
+            \Mail::to(auth()->user()->email)->send(new AttachmentMail($qrcodeName));
 
         }catch(\Exception $e){
 
