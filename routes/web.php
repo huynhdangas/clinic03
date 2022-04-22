@@ -27,9 +27,7 @@ Route::group(['middleware' => ['auth', 'patient']], function () {
     Route::post('/user-profile', [App\Http\Controllers\ProfileController::class, 'store'])->name('profile.store');
     Route::post('/profile-pic', [App\Http\Controllers\ProfileController::class, 'profilePic'])->name('profile.pic');
     Route::get('/my-prescription', [App\Http\Controllers\FrontendController::class, 'myPrescription'])->name('my.prescription');
-    Route::get('/qr-code', function() {
-        return QrCode::format('png')->generate('huynh nguyen dang!', public_path('qrcode/code_'.time().'.png'));
-    });
+    
 
             
 });

@@ -73,7 +73,7 @@ class FrontendController extends Controller
         $date = $request->date;
         $doctorName =  $doctorName->name;
         $qrcontent = 'Ten benh nhan: '.$name.' Thoi gian: '.$time.' Ngay kham: '.$date.' Bac si kham: '.$doctorName;
-        QrCode::format('png')->size(500)->generate($qrcontent, public_path('qrcode/'.$qrcodeName));
+        QrCode::format('png')->size(300)->generate($qrcontent, public_path('qrcode/'.$qrcodeName));
 
         $mailData = [
             'name'=>auth()->user()->name,
